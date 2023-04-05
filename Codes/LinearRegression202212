@@ -33,6 +33,8 @@ import pandas as pd
 from sklearn import datasets, linear_model
 from sklearn.linear_model import LinearRegression
 
+#bug: ValueError: Input contains NaN, infinity or a value too large for dtype('float64').
+#
 data = pd.read_csv('C://Users//RL46RG//OneDrive - ING//Documents//school//thesis//newww//LinearR//total.csv')
 print(data.head())
 data.shape
