@@ -1,0 +1,48 @@
+#Split the csv by comma
+#import data
+
+import csv
+from collections import defaultdict
+
+# create a defaultdict to store the total price and count of each date
+date_prices = defaultdict(lambda: {'total': 0, 'count': 0})
+'''
+# read in the CSV file
+with open('C://Users//RL46RG//LinearR//GAS_US_mini.csv', 'r') as csvfile:
+    reader = csv.reader(csvfile)
+    next(reader) # skip header row
+    for row in reader:
+        date = row[0]
+        price = float(row[1])
+        date_prices[date]['total'] += price
+        date_prices[date]['count'] += 1
+
+# calculate the average price for each date and output to a new CSV file
+with open('C://Users//RL46RG//OneDrive - ING//Documents//school//thesis//newww//LinearR//Gas_OUTPT.csv', 'w', newline='') as csvfile:
+    writer = csv.writer(csvfile)
+    writer.writerow(['Date', 'Average Price'])
+    for date, data in date_prices.items():
+        avg_price = data['total'] / data['count']
+        writer.writerow([date, avg_price])
+        '''
+#Linear regression
+import matplotlib.pyplot as plt
+#%matplotlib inline
+import numpy as np
+import pandas as pd
+from sklearn import datasets, linear_model
+from sklearn.linear_model import LinearRegression
+
+data = pd.read_csv('C://Users//RL46RG//OneDrive - ING//Documents//school//thesis//newww//LinearR//total.csv')
+print(data.head())
+data.shape
+X = data[['Copper', 'EUR', 'SP500', 'US10' ,'Gold_micro' ,'GAS_US_mini' ,'GAS_US_mini']]
+print(X.head())
+y = data[['ROR']]
+print(y.head())
+
+linreg = LinearRegression()
+linreg.fit(X, y)
+
+print (linreg.intercept_)
+print (linreg.coef_)
