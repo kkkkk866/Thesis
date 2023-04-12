@@ -89,3 +89,16 @@ plt.scatter(y, yFit)
 plt.plot([y.min(),y.max()], [y.min(),y.max()], 'k--')
 plt.xlabel('test')
 plt.ylabel('predict')
+
+#Evaluation
+from sklearn import metrics
+
+MSE = metrics.mean_squared_error(y, yFit)
+RMSE = np.sqrt(metrics.mean_squared_error(y, yFit))
+
+print('MSE:',MSE)
+print('RMSE:',RMSE)
+'''output: 
+    MSE: 2.1640091844230555e-06
+    RMSE: 0.0014710571655863873
+'''
