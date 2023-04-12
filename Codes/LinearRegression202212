@@ -90,7 +90,7 @@ plt.plot([y.min(),y.max()], [y.min(),y.max()], 'k--')
 plt.xlabel('test')
 plt.ylabel('predict')
 
-#Evaluation
+#Evaluation: Mean squared error (MSE)
 from sklearn import metrics
 
 MSE = metrics.mean_squared_error(y, yFit)
