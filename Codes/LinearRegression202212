@@ -25,26 +25,67 @@ with open('C://Users//RL46RG//OneDrive - ING//Documents//school//thesis//newww//
         avg_price = data['total'] / data['count']
         writer.writerow([date, avg_price])
         '''
-#Linear regression
+
 import matplotlib.pyplot as plt
-#%matplotlib inline
 import numpy as np
 import pandas as pd
 from sklearn import datasets, linear_model
 from sklearn.linear_model import LinearRegression
 
-#bug: ValueError: Input contains NaN, infinity or a value too large for dtype('float64').
+#bug Fixed: ValueError: Input contains NaN, infinity or a value too large for dtype('float64').
 #
-data = pd.read_csv('C://Users//RL46RG//OneDrive - ING//Documents//school//thesis//newww//LinearR//total.csv')
+data = pd.read_csv('C://Users//RL46RG//KL//Thesis//LinearR//total.csv')
 print(data.head())
-data.shape
-X = data[['Copper', 'EUR', 'SP500', 'US10' ,'Gold_micro' ,'GAS_US_mini' ,'GAS_US_mini']]
+print(data.shape)
+data = data.reset_index()
+X = data[['Copper', 'EUR', 'SP500', 'US10' ,'Gold_micro' ,'GAS_US_mini' ,'CRUDE_W_mini']]
 print(X.head())
-y = data[['ROR']]
-print(y.head())
+print(data.dtypes)
+save=pd.DataFrame(data)
+#save.to_csv('C://Users//RL46RG//KL//Thesis//LinearR//total_.csv', index=False)
+
+#Calculte changing ratio of each commodity: (Copper(n)/Copper(n-1))-1
+ratio = pd.read_csv('C://Users//RL46RG//KL//Thesis//LinearR//ratio.csv')
+for col in ratio.columns:
+    col_ra = col + '_'
+    ratio[col_ra] = pd.Series(dtype=float)
+    for i in range(1, len(ratio)):
+        ra_value = ((ratio.loc[i, col] / ratio.loc[i-1, col])) -1
+        ratio.at[i, col_ra] = ra_value
+
+print(ratio)
+save=pd.DataFrame(ratio)
+#save.to_csv('C://Users//RL46RG//KL//Thesis//LinearR//ratio_.csv', index=False)
+
+#Load data for linear regression
+dt= pd.read_csv('C://Users//RL46RG//KL//Thesis//LinearR//ratio_.csv')
+X = dt[['Copper_', 'EUR_', 'SP500_', 'US10_' ,'Gold_micro_' ,'GAS_US_mini_' ,'CRUDE_W_mini']]
+#transfer percentage to float
+data['ROR_float']=data['ROR'].str.strip('%').astype(float)/100
+y = data[['ROR_float']]
+
+#check NaN and infinite values
+print(np.any(np.isnan(y)))
+print(np.where(np.isnan(y)))
+print(np.all(np.isfinite(y)))
+
+print(np.any(np.isnan(X)))
+print(np.where(np.isnan(X)))
+print(np.all(np.isfinite(X)))
 
 linreg = LinearRegression()
 linreg.fit(X, y)
+yFit = linreg.predict(X) 
+
 
 print (linreg.intercept_)
 print (linreg.coef_)
+'''Output: [-0.01641806]
+    [[-4.26515751e-02 -6.40325875e-02  1.20114294e-02 -3.82759764e-01
+   2.81151789e-02  7.96347089e-03  2.17517532e-04]]
+'''
+
+plt.scatter(y, yFit)
+plt.plot([y.min(),y.max()], [y.min(),y.max()], 'k--')
+plt.xlabel('test')
+plt.ylabel('predict')
