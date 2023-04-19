@@ -1,0 +1,479 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Apr 19 10:19:16 2023
+
+@author: RL46RG
+"""
+import pandas as pd
+import csv
+from collections import defaultdict
+
+
+#20 years of data
+#loading y ROR: change % to float64
+df_ratio = pd.read_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//ror.csv')
+y = df_ratio['ROR'].apply(lambda x: float(x.strip('%')) / 100)
+print(y)
+
+#Loading independent variables
+'''
+#1.corn
+#drop the first 6000 rows(before 2000)
+corn_r=pd.read_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//corn.csv')
+corn_r = corn_r.drop(corn_r.index[:6856])
+print(corn_r)
+#Overwrite the original file
+#corn_r.to_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//corn_.csv', index=False)
+
+#Split by comma and delete clock time mannually
+corn_=pd.read_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//corn_.csv')
+print(corn_)
+print(type(corn_['Corn']))
+#Calculate average price each day
+#delete missing value
+cornn = corn_.dropna()
+#cornn.to_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//cornn.csv', index=False)
+date_prices = defaultdict(lambda: {'total': 0, 'count': 0})
+with open('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//cornn.csv', 'r') as csvfile:
+    reader = csv.reader(csvfile)
+    next(reader) # skip header row
+    for row in reader:
+        date = row[0]
+        price = float(row[1])
+        date_prices[date]['total'] += price
+        date_prices[date]['count'] += 1
+
+# calculate the average price for each date and output to a new CSV file
+with open('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//corn_n.csv', 'w', newline='') as csvfile:
+    writer = csv.writer(csvfile)
+    writer.writerow(['Date', 'Average Price'])
+    for date, data in date_prices.items():
+        avg_price = data['total'] / data['count']
+        writer.writerow([date, avg_price])
+
+'''
+#2.copper
+#drop the first 6000 rows(before 2000)
+
+copper_r=pd.read_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//copper.csv')
+corn_r = corn_r.drop(corn_r.index[:6856])
+print(corn_r)
+#Overwrite the original file
+#corn_r.to_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//corn_.csv', index=False)
+
+#Split by comma and delete clock time mannually
+corn_=pd.read_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//corn_.csv')
+print(corn_)
+print(type(corn_['Corn']))
+#Calculate average price each day
+#delete missing value
+cornn = corn_.dropna()
+#cornn.to_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//cornn.csv', index=False)
+date_prices = defaultdict(lambda: {'total': 0, 'count': 0})
+with open('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//cornn.csv', 'r') as csvfile:
+    reader = csv.reader(csvfile)
+    next(reader) # skip header row
+    for row in reader:
+        date = row[0]
+        price = float(row[1])
+        date_prices[date]['total'] += price
+        date_prices[date]['count'] += 1
+
+# calculate the average price for each date and output to a new CSV file
+with open('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//corn_n.csv', 'w', newline='') as csvfile:
+    writer = csv.writer(csvfile)
+    writer.writerow(['Date', 'Average Price'])
+    for date, data in date_prices.items():
+        avg_price = data['total'] / data['count']
+        writer.writerow([date, avg_price])
+        
+#2.copper
+#drop the first 6000 rows(before 2000)
+
+copper_r=pd.read_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//copper.csv')
+copper_r = copper_r.drop(copper_r.index[:6856])
+print(copper_r)
+#Overwrite the original file
+#copper_r.to_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//copper_.csv', index=False)
+
+#Split by comma and delete clock time mannually
+copper_=pd.read_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//copper_.csv')
+#print(copper_)
+#print(type(copper_['copper']))
+#Calculate average price each day
+#delete missing value
+coppern = copper_.dropna()
+coppern.to_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//coppern.csv', index=False)
+date_prices = defaultdict(lambda: {'total': 0, 'count': 0})
+with open('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//coppern.csv', 'r') as csvfile:
+    reader = csv.reader(csvfile)
+    next(reader) # skip header row
+    for row in reader:
+        date = row[0]
+        price = float(row[1])
+        date_prices[date]['total'] += price
+        date_prices[date]['count'] += 1
+
+# calculate the average price for each date and output to a new CSV file
+with open('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//copper_n.csv', 'w', newline='') as csvfile:
+    writer = csv.writer(csvfile)
+    writer.writerow(['Date', 'Average Price'])
+    for date, data in date_prices.items():
+        avg_price = data['total'] / data['count']
+        writer.writerow([date, avg_price])
+        
+
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Apr 19 10:19:16 2023
+
+@author: RL46RG
+"""
+import pandas as pd
+import csv
+from collections import defaultdict
+
+
+#20 years of data
+#loading y ROR: change % to float64
+df_ratio = pd.read_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//ror.csv')
+y = df_ratio['ROR'].apply(lambda x: float(x.strip('%')) / 100)
+print(y)
+
+#Loading independent variables
+'''
+#1.corn
+#drop the first 6000 rows(before 2000)
+corn_r=pd.read_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//corn.csv')
+corn_r = corn_r.drop(corn_r.index[:6856])
+print(corn_r)
+#Overwrite the original file
+#corn_r.to_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//corn_.csv', index=False)
+
+#Split by comma and delete clock time mannually
+corn_=pd.read_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//corn_.csv')
+print(corn_)
+print(type(corn_['Corn']))
+#Calculate average price each day
+#delete missing value
+cornn = corn_.dropna()
+#cornn.to_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//cornn.csv', index=False)
+date_prices = defaultdict(lambda: {'total': 0, 'count': 0})
+with open('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//cornn.csv', 'r') as csvfile:
+    reader = csv.reader(csvfile)
+    next(reader) # skip header row
+    for row in reader:
+        date = row[0]
+        price = float(row[1])
+        date_prices[date]['total'] += price
+        date_prices[date]['count'] += 1
+
+# calculate the average price for each date and output to a new CSV file
+with open('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//corn_n.csv', 'w', newline='') as csvfile:
+    writer = csv.writer(csvfile)
+    writer.writerow(['Date', 'Average Price'])
+    for date, data in date_prices.items():
+        avg_price = data['total'] / data['count']
+        writer.writerow([date, avg_price])
+
+'''
+#2.copper
+#drop the first 6000 rows(before 2000)
+
+copper_r=pd.read_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//copper.csv')
+corn_r = corn_r.drop(corn_r.index[:6856])
+print(corn_r)
+#Overwrite the original file
+#corn_r.to_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//corn_.csv', index=False)
+
+#Split by comma and delete clock time mannually
+corn_=pd.read_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//corn_.csv')
+print(corn_)
+print(type(corn_['Corn']))
+#Calculate average price each day
+#delete missing value
+cornn = corn_.dropna()
+#cornn.to_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//cornn.csv', index=False)
+date_prices = defaultdict(lambda: {'total': 0, 'count': 0})
+with open('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//cornn.csv', 'r') as csvfile:
+    reader = csv.reader(csvfile)
+    next(reader) # skip header row
+    for row in reader:
+        date = row[0]
+        price = float(row[1])
+        date_prices[date]['total'] += price
+        date_prices[date]['count'] += 1
+
+# calculate the average price for each date and output to a new CSV file
+with open('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//corn_n.csv', 'w', newline='') as csvfile:
+    writer = csv.writer(csvfile)
+    writer.writerow(['Date', 'Average Price'])
+    for date, data in date_prices.items():
+        avg_price = data['total'] / data['count']
+        writer.writerow([date, avg_price])
+        
+#2.copper
+#drop the first 6000 rows(before 2000)
+
+copper_r=pd.read_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//copper.csv')
+copper_r = copper_r.drop(copper_r.index[:6856])
+print(copper_r)
+#Overwrite the original file
+#copper_r.to_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//copper_.csv', index=False)
+
+#Split by comma and delete clock time mannually
+copper_=pd.read_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//copper_.csv')
+#print(copper_)
+#print(type(copper_['copper']))
+#Calculate average price each day
+#delete missing value
+coppern = copper_.dropna()
+coppern.to_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//coppern.csv', index=False)
+date_prices = defaultdict(lambda: {'total': 0, 'count': 0})
+with open('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//coppern.csv', 'r') as csvfile:
+    reader = csv.reader(csvfile)
+    next(reader) # skip header row
+    for row in reader:
+        date = row[0]
+        price = float(row[1])
+        date_prices[date]['total'] += price
+        date_prices[date]['count'] += 1
+
+# calculate the average price for each date and output to a new CSV file
+with open('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//copper_n.csv', 'w', newline='') as csvfile:
+    writer = csv.writer(csvfile)
+    writer.writerow(['Date', 'Average Price'])
+    for date, data in date_prices.items():
+        avg_price = data['total'] / data['count']
+        writer.writerow([date, avg_price])
+        
+
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Apr 19 13:43:22 2023
+
+@author: RL46RG
+"""
+import pandas as pd
+import csv
+from collections import defaultdict
+#eur
+#drop the first 6000 rows(before 2000)
+
+eur_r=pd.read_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//eur.csv')
+eur_r = eur_r.drop(eur_r.index[:139])
+print(eur_r)
+#Overwrite the original file
+eur_r.to_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//eur_.csv', index=False)
+
+#Split by comma and delete clock time mannually
+eur_=pd.read_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//eur_.csv')
+#print(eur_)
+#print(type(eur_['eur']))
+#Calculate average price each day
+#delete missing value
+eurn = eur_.dropna()
+eurn.to_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//eurn.csv', index=False)
+date_prices = defaultdict(lambda: {'total': 0, 'count': 0})
+with open('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//eurn.csv', 'r') as csvfile:
+    reader = csv.reader(csvfile)
+    next(reader) # skip header row
+    for row in reader:
+        date = row[0]
+        price = float(row[1])
+        date_prices[date]['total'] += price
+        date_prices[date]['count'] += 1
+
+# calculate the average price for each date and output to a new CSV file
+with open('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//eur_n.csv', 'w', newline='') as csvfile:
+    writer = csv.writer(csvfile)
+    writer.writerow(['Date', 'Average Price'])
+    for date, data in date_prices.items():
+        avg_price = data['total'] / data['count']
+        writer.writerow([date, avg_price])
+        
+#gold
+#drop the first 6000 rows(before 2000)
+
+gold_r=pd.read_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//gold.csv')
+gold_r = gold_r.drop(gold_r.index[:6225])
+print(gold_r)
+#Overwrite the original file
+gold_r.to_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//gold_.csv', index=False)
+
+#Split by comma and delete clock time mannually
+gold_=pd.read_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//gold_.csv')
+#print(gold_)
+#print(type(gold_['gold']))
+#Calculate average price each day
+#delete missing value
+goldn = gold_.dropna()
+goldn.to_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//goldn.csv', index=False)
+date_prices = defaultdict(lambda: {'total': 0, 'count': 0})
+with open('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//goldn.csv', 'r') as csvfile:
+    reader = csv.reader(csvfile)
+    next(reader) # skip header row
+    for row in reader:
+        date = row[0]
+        price = float(row[1])
+        date_prices[date]['total'] += price
+        date_prices[date]['count'] += 1
+
+# calculate the average price for each date and output to a new CSV file
+with open('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//gold_n.csv', 'w', newline='') as csvfile:
+    writer = csv.writer(csvfile)
+    writer.writerow(['Date', 'Average Price'])
+    for date, data in date_prices.items():
+        avg_price = data['total'] / data['count']
+        writer.writerow([date, avg_price])
+        
+        
+import pandas as pd
+import csv
+from collections import defaultdict
+#gas
+#drop the first 6000 rows(before 2000)
+
+gas_r=pd.read_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//gas.csv')
+gas_r = gas_r.drop(gas_r.index[:2411])
+print(gas_r)
+#Overwrite the original file
+gas_r.to_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//gas_.csv', index=False)
+
+#Split by comma and delete clock time mannually
+gas_=pd.read_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//gas_.csv')
+#print(gas_)
+#print(type(gas_['gas']))
+#Calculate average price each day
+#delete missing value
+gasn = gas_.dropna()
+gasn.to_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//gasn.csv', index=False)
+date_prices = defaultdict(lambda: {'total': 0, 'count': 0})
+with open('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//gasn.csv', 'r') as csvfile:
+    reader = csv.reader(csvfile)
+    next(reader) # skip header row
+    for row in reader:
+        date = row[0]
+        price = float(row[1])
+        date_prices[date]['total'] += price
+        date_prices[date]['count'] += 1
+
+# calculate the average price for each date and output to a new CSV file
+with open('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//gas_n.csv', 'w', newline='') as csvfile:
+    writer = csv.writer(csvfile)
+    writer.writerow(['Date', 'Average Price'])
+    for date, data in date_prices.items():
+        avg_price = data['total'] / data['count']
+        writer.writerow([date, avg_price])
+        
+#sp500
+#drop the first 6000 rows(before 2000)
+
+sp_r=pd.read_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//sp.csv')
+sp_r = sp_r.drop(sp_r.index[:4379])
+print(sp_r)
+#Overwrite the original file
+sp_r.to_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//sp_.csv', index=False)
+
+#Split by comma and delete clock time mannually
+sp_=pd.read_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//sp_.csv')
+#print(sp_)
+#print(type(sp_['sp']))
+#Calculate average price each day
+#delete missing value
+spn = sp_.dropna()
+spn.to_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//spn.csv', index=False)
+date_prices = defaultdict(lambda: {'total': 0, 'count': 0})
+with open('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//spn.csv', 'r') as csvfile:
+    reader = csv.reader(csvfile)
+    next(reader) # skip header row
+    for row in reader:
+        date = row[0]
+        price = float(row[1])
+        date_prices[date]['total'] += price
+        date_prices[date]['count'] += 1
+
+# calculate the average price for each date and output to a new CSV file
+with open('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//sp_n.csv', 'w', newline='') as csvfile:
+    writer = csv.writer(csvfile)
+    writer.writerow(['Date', 'Average Price'])
+    for date, data in date_prices.items():
+        avg_price = data['total'] / data['count']
+        writer.writerow([date, avg_price])
+        
+        
+ # -*- coding: utf-8 -*-
+"""
+
+"""
+import pandas as pd
+import csv
+from collections import defaultdict
+#us10
+#drop the first 6000 rows(before 2000)
+
+us_r=pd.read_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//us.csv')
+us_r = us_r.drop(us_r.index[:4372])
+print(us_r)
+#Overwrite the original file
+us_r.to_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//us_.csv', index=False)
+
+#uslit by comma and delete clock time mannually
+us_=pd.read_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//us_.csv')
+#print(us_)
+#print(type(us_['us']))
+#Calculate average price each day
+#delete missing value
+usn = us_.dropna()
+usn.to_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//usn.csv', index=False)
+date_prices = defaultdict(lambda: {'total': 0, 'count': 0})
+with open('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//usn.csv', 'r') as csvfile:
+    reader = csv.reader(csvfile)
+    next(reader) # skip header row
+    for row in reader:
+        date = row[0]
+        price = float(row[1])
+        date_prices[date]['total'] += price
+        date_prices[date]['count'] += 1
+
+# calculate the average price for each date and output to a new CSV file
+with open('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//us_n.csv', 'w', newline='') as csvfile:
+    writer = csv.writer(csvfile)
+    writer.writerow(['Date', 'Average Price'])
+    for date, data in date_prices.items():
+        avg_price = data['total'] / data['count']
+        writer.writerow([date, avg_price])
+        
+#Common dates and prices
+import csv
+from collections import defaultdict
+
+# Define the input file names
+file_names = ["file1.csv", "file2.csv", "file3.csv", "file4.csv", "file5.csv", "file6.csv", "file7.csv"]
+
+# Define a dictionary to hold the prices for each date
+prices = defaultdict(list)
+
+# Loop through each file and add the prices to the dictionary
+for file_name in file_names:
+    with open(file_name, 'r') as file:
+        reader = csv.reader(file)
+        for row in reader:
+            if len(row) == 2:
+                date = row[0]
+                price = row[1]
+                prices[date].append(price)
+
+# Find the dates that are common to all files
+common_dates = []
+for date, price_list in prices.items():
+    if len(price_list) == len(file_names):
+        common_dates.append(date)
+
+# Write the common dates and their prices to a new file
+with open('output.csv', 'w', newline='') as file:
+    writer = csv.writer(file)
+    writer.writerow(['Date', 'Price'])
+    for date in common_dates:
+        prices_for_date = prices[date]
+        writer.writerow([date, *prices_for_date])
