@@ -445,35 +445,113 @@ with open('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar//us_n.c
         writer.writerow([date, avg_price])
         
 #Common dates and prices
-import csv
-from collections import defaultdict
+import pandas as pd
+import os
 
-# Define the input file names
-file_names = ["file1.csv", "file2.csv", "file3.csv", "file4.csv", "file5.csv", "file6.csv", "file7.csv"]
+# Define the directory where the CSV files are stored
+data_dir = 'C:/Users/RL46RG/KL/Thesis/LinearR/rollingre/data20jaar_merged/'
 
-# Define a dictionary to hold the prices for each date
-prices = defaultdict(list)
+# Create an empty dataframe to hold the merged data
+merged_df = pd.DataFrame(columns=['Date'])
 
-# Loop through each file and add the prices to the dictionary
-for file_name in file_names:
-    with open(file_name, 'r') as file:
-        reader = csv.reader(file)
-        for row in reader:
-            if len(row) == 2:
-                date = row[0]
-                price = row[1]
-                prices[date].append(price)
+# Loop through each CSV file in the directory
+for filename in os.listdir(data_dir):
+    if filename.endswith('.csv'):
+        # Read the CSV file and add it to the merged dataframe
+        filepath = os.path.join(data_dir, filename)
+        df = pd.read_csv(filepath, names=['Date', filename[:-4]])
+        merged_df = pd.merge(merged_df, df, on='Date', how='outer')
 
-# Find the dates that are common to all files
-common_dates = []
-for date, price_list in prices.items():
-    if len(price_list) == len(file_names):
-        common_dates.append(date)
+# Drop rows with missing values
+merged_df = merged_df.dropna()
 
-# Write the common dates and their prices to a new file
-with open('output.csv', 'w', newline='') as file:
-    writer = csv.writer(file)
-    writer.writerow(['Date', 'Price'])
-    for date in common_dates:
-        prices_for_date = prices[date]
-        writer.writerow([date, *prices_for_date])
+# Write the merged dataframe to a new CSV file
+merged_df.to_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar_merged//merged.csv', index=False)
+print(merged_df)
+
+#transfer ROR percentage to floatROR
+df_ratio = pd.read_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar_merged//ror.csv')
+y = df_ratio['ROR'].apply(lambda x: float(x.strip('%')) / 100)
+print(y)
+
+'''
+import pandas as pd
+import os
+'''
+# Define the directory where the CSV files are stored
+data_dir = 'C:/Users/RL46RG/KL/Thesis/LinearR/rollingre/data20jaar_merged/'
+
+# Create an empty dataframe to hold the merged data
+merged_df = pd.DataFrame(columns=['Date'])
+
+# Loop through each CSV file in the directory
+for filename in os.listdir(data_dir):
+    if filename.endswith('.csv'):
+        # Read the CSV file and add it to the merged dataframe
+        filepath = os.path.join(data_dir, filename)
+        if filename == 'ROR.csv':
+            df = pd.read_csv(filepath, names=['Date', 'ROR'])
+        else:
+            df = pd.read_csv(filepath, names=['Date', filename[:-4]])
+        merged_df = pd.merge(merged_df, df, on='Date', how='outer')
+
+# Drop rows with missing values
+merged_df = merged_df.dropna()
+
+# Write the merged dataframe to a new CSV file
+merged_df.to_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar_merged//merged.csv',index=False)
+'''
+'''
+#Calculate increasing ratio
+import pandas as pd
+
+# Read the merged CSV file into a pandas dataframe
+merged_df = pd.read_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar_merged//merged.csv', parse_dates=['Date'])
+
+# Define the list of columns to calculate the increasing ratio
+cols = ['copper', 'corn', 'eur', 'gas', 'gold', 'sp', 'us']
+
+# Loop through each column
+for col in cols:
+    # Calculate the increasing ratio
+    merged_df[f'{col}_ratio'] = merged_df[col] / merged_df[col].shift(1) - 1
+
+    # Replace the original value with the average value
+    merged_df[col] = merged_df[f'{col}_ratio'].rolling(window=30, min_periods=1).mean()
+
+    # Drop the ratio column
+    merged_df = merged_df.drop(columns=[f'{col}_ratio'])
+
+# Save the modified dataframe to a new CSV file
+merged_df.to_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar_merged//modified.csv', index=False)
+'''
+
+import statsmodels.api as sm
+
+# Read the merged CSV file into a pandas dataframe
+merged_df = pd.read_csv('C://Users//RL46RG//KL//Thesis//LinearR//rollingre//data20jaar_merged//modified.csv', parse_dates=['Date'])
+
+# Define the list of independent variables
+independent_vars = ['copper', 'corn', 'eur', 'gas', 'gold', 'sp', 'us']
+
+# Define the dependent variable
+dependent_var = 'ROR'
+
+# Define the list of window sizes to test
+window_sizes = [30, 60, 90, 120]
+
+# Loop through each window size
+for window_size in window_sizes:
+    # Create a rolling window of data
+    rolling_df = merged_df.rolling(window_size, on='Date').mean().dropna()
+
+    # Fit a linear regression model to the rolling window
+    X = rolling_df[independent_vars]
+    y = rolling_df[dependent_var]
+    X = sm.add_constant(X)
+    model = sm.OLS(y, X).fit()
+
+    # Print the results
+    print(f"Window size: {window_size}")
+    print(model.summary())
+
