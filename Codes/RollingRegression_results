@@ -32,3 +32,8 @@ Notes:
 [1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
 [2] The condition number is large,  6e+03. This might indicate that there are
 strong multicollinearity or other numerical problems
+
+1.	The R-squared values are 0.382 indicates that about 38.2% of the variation in the dependent variable is explained by the independent variables. 2.
+2.	The coefficients for the independent variables copper, corn, eur, gas, sp, and us have a statistically significant effect on the dependent variable (ROR) as indicated by their respective p-values (P>|t|) which are all less than 0.05. 3.
+3.	However, the coefficient for gold has a p-value of 0.863, which is greater than the significance level of 0.05, indicating that it does not have a statistically significant effect on ROR.
+
