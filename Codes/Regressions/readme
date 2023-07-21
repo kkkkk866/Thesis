@@ -1,0 +1,288 @@
+Step 1 Automatic downloading
+
+'''
+import os
+import requests
+
+# Main function to download all CSV files
+def download_all_csv_files(repository_url, download_folder):
+    api_url = f"https://api.github.com/repos/{repository_url}/contents/data/futures/adjusted_prices_csv"
+    response = requests.get(api_url)
+    
+    if response.status_code != 200:
+        print("Error: Unable to fetch the data from GitHub.")
+        return
+    
+    files_data = response.json()
+    for file_info in files_data:
+        if file_info["type"] == "file" and file_info["name"].endswith(".csv"):
+            file_url = file_info["download_url"]
+            file_path = os.path.join(download_folder, file_info["name"])
+            response = requests.get(file_url)
+            if response.status_code == 200:
+                with open(file_path, "wb") as f:
+                    f.write(response.content)
+                print(f"Downloaded: {file_path}")
+            else:
+                print(f"Failed to download: {file_info['name']}")
+
+if __name__ == "__main__":
+    
+    download_folder = "C://Users//RL46RG//KL//Thesis//data//futureprices"
+    os.makedirs(download_folder, exist_ok=True)
+
+    github_repository_url = "robcarver17/pysystemtrade"
+    download_all_csv_files(github_repository_url, download_folder)
+
+step 2 Data preprocessing
+#step 2.1 only save ROR and change to numbers
+'''
+import pandas as pd
+
+# Read the CSV file into a pandas DataFrame
+csv_file_path = "C://Users//RL46RG//KL//Thesis//data//return//SG_CTA.csv"  # Replace with the actual path to your CSV file
+df = pd.read_csv(csv_file_path)
+
+# Delete the columns AMI, MTD, QTD, and YTD
+columns_to_delete = ["VAMI", "MTD", "QTD", "YTD"]
+df.drop(columns=columns_to_delete, inplace=True)
+
+# Convert the values in the ROR column from percentages to numbers
+df["ROR"] = df["ROR"].str.rstrip("%").astype(float) / 100
+
+# Save the modified DataFrame back to a new CSV file
+new_csv_file_path = "C://Users//RL46RG//KL//Thesis//data//return//SG_CTA_.csv"  # Replace with the path where you want to save the new CSV file
+df.to_csv(new_csv_file_path, index=False)
+
+print("Columns deleted and ROR values converted successfully.")
+
+'''
+#step 2.2 future prices: 
+#step 2.2.1 Delete the o'clock time and keep only the date in DATETIME column
+#           Replace the prices within the same date with the average price
+
+'''
+import os
+import pandas as pd
+
+def process_csv_file(input_file):
+    # Read the CSV file
+    df = pd.read_csv(input_file, parse_dates=["DATETIME"])
+
+    # 1. Delete the o'clock time and keep only the date in DATETIME column
+    df["DATETIME"] = df["DATETIME"].dt.date
+
+    # 2. Replace the prices within the same date with the average price
+    df = df.groupby("DATETIME")["price"].mean().reset_index()
+
+    return df
+
+if __name__ == "__main__":
+    input_folder = r"C:\Users\RL46RG\KL\Thesis\data\futureprices"
+    output_folder = r"C:\Users\RL46RG\KL\Thesis\data\future_m"
+
+    os.makedirs(output_folder, exist_ok=True)
+
+    # Loop through each CSV file in the input folder
+    for filename in os.listdir(input_folder):
+        if filename.endswith(".csv"):
+            input_file = os.path.join(input_folder, filename)
+            output_file = os.path.join(output_folder, filename)
+
+            # Process the CSV file
+            processed_df = process_csv_file(input_file)
+
+            # Save the processed DataFrame to a new CSV file
+            processed_df.to_csv(output_file, index=False)
+
+            print(f"Processed {input_file} and saved to {output_file}")
+'''          
+#step 2.2.2 increased ratio
+import os
+import pandas as pd
+
+def process_csv_file(input_file):
+    # Read the CSV file
+    df = pd.read_csv(input_file, parse_dates=["DATETIME"])
+
+    # 1. Rename the column DATETIME to date
+    df.rename(columns={"DATETIME": "date"}, inplace=True)
+
+    # 2. Replace the price value with the increase ratio (price(n) / price(n-1)) - 1
+    df["price"] = df["price"].pct_change()
+
+    return df
+
+if __name__ == "__main__":
+    input_folder = r"C:\Users\RL46RG\KL\Thesis\data\future_m"
+    output_folder = r"C:\Users\RL46RG\KL\Thesis\data\future_mm"
+
+    os.makedirs(output_folder, exist_ok=True)
+
+    # Loop through each CSV file in the input folder
+    for filename in os.listdir(input_folder):
+        if filename.endswith(".csv"):
+            input_file = os.path.join(input_folder, filename)
+            output_file = os.path.join(output_folder, filename)
+
+            # Process the CSV file
+            processed_df = process_csv_file(input_file)
+
+            # Save the processed DataFrame to a new CSV file
+            processed_df.to_csv(output_file, index=False)
+
+            print(f"Processed {input_file} and saved to {output_file}")
+
+Step 2.3 Merging returns and prices
+#step 2.3
+import os
+import pandas as pd
+
+def merge_csv_files(future_mm_folder, return_folder, output_folder):
+    # Load the return CSV file
+    return_file = os.path.join(return_folder, "SG_CTA_.csv")
+    return_df = pd.read_csv(return_file, parse_dates=["date"])
+
+    # Initialize the merged DataFrame with the 'date' and 'ROR' columns from the return DataFrame
+    merged_df = return_df.copy()
+
+    # Loop through each CSV file in the future_mm folder
+    for filename in os.listdir(future_mm_folder):
+        if filename.endswith(".csv"):
+            csv_name = os.path.splitext(filename)[0]
+
+            # Load the future_mm CSV file
+            future_mm_file = os.path.join(future_mm_folder, filename)
+            future_mm_df = pd.read_csv(future_mm_file, parse_dates=["date"])
+
+            # Merge the future_mm DataFrame into the merged DataFrame based on the 'date' column
+            merged_df = merged_df.merge(future_mm_df.set_index("date"), left_on="date", right_index=True, how="left", suffixes=("", f"_{csv_name}"))
+
+    # Save the merged DataFrame to a new CSV file
+    output_file = os.path.join(output_folder, "merge.csv")
+    merged_df.to_csv(output_file, index=False)
+
+if __name__ == "__main__":
+    future_mm_folder = r"C:\Users\RL46RG\KL\Thesis\data\future_mm"
+    return_folder = r"C:\Users\RL46RG\KL\Thesis\data\return"
+    output_folder = r"C:\Users\RL46RG\KL\Thesis\data"
+
+    os.makedirs(output_folder, exist_ok=True)
+
+    merge_csv_files(future_mm_folder, return_folder, output_folder)
+
+Step 3 Use LASSO to select instruments (failed)
+
+#Use LASSO to select instruments
+#3.1From the data perspective, filter the instruments with enough data points.
+
+import os
+import pandas as pd
+
+
+def process_merge_csv(merge_file, output_folder):
+    # Read the CSV file
+    df = pd.read_csv(merge_file)
+
+    # Print the number of rows and the number of empty cells in each column
+    print("Number of rows:", len(df))
+    print("Number of empty cells in each column:")
+    print(df.isnull().sum())
+
+    # Delete columns with more than 700 empty cells
+    df = df.dropna(thresh=len(df) - 700, axis=1)
+
+    # Save the modified DataFrame to a new CSV file
+    #output_file = os.path.join(output_folder, "mm.csv")
+    #df.to_csv(output_file, index=False)
+
+if __name__ == "__main__":
+    merge_file = r"C:\Users\RL46RG\KL\Thesis\data\merge.csv"
+    output_folder = r"C:\Users\RL46RG\KL\Thesis\data"
+    os.makedirs(output_folder, exist_ok=True)
+    #process_merge_csv(merge_file, output_folder)
+
+Step 3.2 Fitting rolling regression with LASSO Ridge and Elastic
+import pandas as pd
+import numpy as np
+from sklearn.linear_model import Lasso, Ridge, ElasticNet
+from sklearn.metrics import mean_squared_error
+
+# Load the data
+df = pd.read_csv('C:\\Users\\RL46RG\\KL\\Thesis\\data\\7instr.csv')
+
+# Convert the date column to datetime format
+df['date'] = pd.to_datetime(df['date'])
+
+# Fill NA values with 0
+df = df.fillna(0)
+
+# Set the X and y variables
+X = df.drop(columns=['date', 'ROR'])
+y = df['ROR']
+
+# Window sizes
+window_sizes = [5, 10, 20]
+
+# Store all results
+results = []
+
+# Define models
+models = [Lasso(), Ridge(), ElasticNet()]
+model_names = ['Lasso', 'Ridge', 'ElasticNet']
+
+for window in window_sizes:
+    for i, model in enumerate(models):
+        for start in range(len(df) - window):
+            # Get the window data
+            X_window = X.iloc[start:start + window]
+            y_window = y.iloc[start:start + window]
+
+            # Fit the model on the window data
+            model.fit(X_window, y_window)
+
+            # Get predictions
+            predictions = model.predict(X_window)
+
+            # Calculate and store the MSE
+            mse = mean_squared_error(y_window, predictions)
+            results.append((mse, window, model_names[i]))
+
+        # Print progress update
+        print(f"Completed calculations for model {model_names[i]} with window size {window}")
+
+# Sort the results in ascending order by MSE
+results.sort()
+
+# Print the top three results
+for mse, window, model in results[:6]:
+    print(f"Model: {model}, Window size: {window}, MSE: {mse}")
+    
+import matplotlib.pyplot as plt
+
+# Separate the results by model
+results_lasso = [result for result in results if result[2] == 'Lasso']
+results_ridge = [result for result in results if result[2] == 'Ridge']
+results_elastic = [result for result in results if result[2] == 'ElasticNet']
+
+# Create the figure and axes
+fig, ax = plt.subplots()
+
+# Plot the MSE for each model
+ax.plot([result[1] for result in results_lasso], [result[0] for result in results_lasso], label='Lasso')
+ax.plot([result[1] for result in results_ridge], [result[0] for result in results_ridge], label='Ridge')
+ax.plot([result[1] for result in results_elastic], [result[0] for result in results_elastic], label='ElasticNet')
+
+# Add labels and a legend
+ax.set_xlabel('Window Size')
+ax.set_ylabel('MSE')
+ax.legend()
+
+# Show the plot
+plt.show()
+
+'''
+Model: Ridge, Window size: 10, MSE: 3.119952232589765e-07
+Model: ElasticNet, Window size: 10, MSE: 3.1490000000000005e-07
+Model: Lasso, Window size: 10, MSE: 3.1490000000000005e-07
+'''
