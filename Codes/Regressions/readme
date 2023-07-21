@@ -286,3 +286,18 @@ Model: Ridge, Window size: 10, MSE: 3.119952232589765e-07
 Model: ElasticNet, Window size: 10, MSE: 3.1490000000000005e-07
 Model: Lasso, Window size: 10, MSE: 3.1490000000000005e-07
 '''
+Completed calculations for model Lasso with window size 5
+Completed calculations for model Ridge with window size 5
+Completed calculations for model ElasticNet with window size 5
+Completed calculations for model Lasso with window size 10
+Completed calculations for model Ridge with window size 10
+Completed calculations for model ElasticNet with window size 10
+Completed calculations for model Lasso with window size 20
+Completed calculations for model Ridge with window size 20
+Completed calculations for model ElasticNet with window size 20
+Model: Ridge, Window size: 5, MSE: 1.038284488757695e-08
+Model: ElasticNet, Window size: 5, MSE: 1.0399999999999997e-08
+Model: Lasso, Window size: 5, MSE: 1.0399999999999997e-08
+Model: Ridge, Window size: 5, MSE: 8.509201950962847e-08
+Model: ElasticNet, Window size: 5, MSE: 8.560000000000001e-08
+Model: Lasso, Window size: 5, MSE: 8.560000000000001e-08
