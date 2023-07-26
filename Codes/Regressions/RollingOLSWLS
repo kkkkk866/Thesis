@@ -1,7 +1,15 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Jul 24 23:21:01 2023
+
+@author: RL46RG
+"""
+
 import pandas as pd
 import numpy as np
 import statsmodels.api as sm
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 
 # Load CSV data
 data = pd.read_csv(r'C:\Users\RL46RG\KL\Thesis\data\7instr.csv', parse_dates=[0], index_col=0)
@@ -42,7 +50,8 @@ predicted_ROR_ols_5 = get_predicted_ROR(window_size=5, method='OLS')
 #predicted_ROR_wls_10 = get_predicted_ROR(window_size=10, method='WLS')
 
 # Plot actual ROR values and predicted ROR values for both window sizes
-plt.figure(figsize=(80, 8))
+plt.figure(figsize=(80, 8))  # Increase the figure size to show more years
+
 plt.plot(data.index[5:], data['ROR'][5:], label='Actual ROR', color='blue')
 plt.plot(data.index[5:], predicted_ROR_ols_5, label='Predicted ROR (OLS, Window 5)', linestyle='dashed', color='green')
 #plt.plot(data.index[10:], predicted_ROR_ols_10, label='Predicted ROR (OLS, Window 10)', linestyle='dashed', color='orange')
@@ -54,4 +63,11 @@ plt.ylabel('ROR')
 plt.title('Actual vs. Predicted ROR values for Rolling OLS and WLS')
 plt.legend()
 plt.grid(True)
+
+# Set x-axis to display years from 2000 to 2024 every year
+years = mdates.YearLocator()
+years_fmt = mdates.DateFormatter('%Y')
+plt.gca().xaxis.set_major_locator(years)
+plt.gca().xaxis.set_major_formatter(years_fmt)
+
 plt.show()
