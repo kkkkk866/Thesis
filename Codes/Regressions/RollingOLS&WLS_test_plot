@@ -1,0 +1,75 @@
+
+
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Jul 25 23:40:47 2023
+
+@author: RL46RG
+"""
+
+import numpy as np
+import pandas as pd
+import statsmodels.api as sm
+from statsmodels.regression.rolling import RollingOLS, RollingWLS
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+
+# Load data
+df = pd.read_csv('C:\\Users\\RL46RG\\KL\\Thesis\\data\\7instr.csv')
+df = df.fillna(0)
+
+# Ensure that 'date' column is a datetime object and set it as index
+df['date'] = pd.to_datetime(df['date'])
+df.set_index('date', inplace=True)
+
+# Choose a split point for your data
+split_point = int(len(df) * 0.02)  # let's say 80% for training, 20% for testing
+
+# Create your training and test sets
+df_train = df.iloc[:split_point]
+df_test = df.iloc[split_point:]
+
+# Get your X and y for training
+endog_train = df_train['ROR']
+exog_train = sm.add_constant(df_train[['COPPER', 'EUR', 'SP500', 'US10', 'GOLD_micro', 'GAS_US_mini', 'CRUDE_W_mini']])
+weights_train = np.ones_like(endog_train)  # change here for different weights
+
+# Get your X for testing
+exog_test = sm.add_constant(df_test[['COPPER', 'EUR', 'SP500', 'US10', 'GOLD_micro', 'GAS_US_mini', 'CRUDE_W_mini']])
+
+# Specify the window sizes
+window_sizes = [10, 50]
+
+fig, ax = plt.subplots(figsize=(80, 20))
+# Plot actual ROR
+ax.plot(df_test.index, df_test['ROR'], label='Actual ROR')
+
+for window in window_sizes:
+    # Fit Rolling OLS on training data
+    model_ols = RollingOLS(endog_train, exog_train, window=window)
+    rres_ols = model_ols.fit()
+
+    # Fit Rolling WLS on training data
+    model_wls = RollingWLS(endog_train, exog_train, window=window, weights=weights_train)
+    rres_wls = model_wls.fit()
+
+    # Get the estimated parameters of the most recent window
+    latest_coef_ols = rres_ols.params.iloc[-1]
+    latest_coef_wls = rres_wls.params.iloc[-1]
+
+    # Predict y for test data
+    df_test['predicted_ROR_ols_' + str(window)] = np.dot(exog_test, latest_coef_ols)
+    df_test['predicted_ROR_wls_' + str(window)] = np.dot(exog_test, latest_coef_wls)
+
+    # Plot predicted values
+    ax.plot(df_test.index, df_test['predicted_ROR_ols_' + str(window)], label='Predicted ROR OLS, window='+str(window))
+    ax.plot(df_test.index, df_test['predicted_ROR_wls_' + str(window)], label='Predicted ROR WLS, window='+str(window))
+
+# Format x-axis to display one tick per year
+years = mdates.YearLocator()   # every year
+years_fmt = mdates.DateFormatter('%Y')
+ax.xaxis.set_major_locator(years)
+ax.xaxis.set_major_formatter(years_fmt)
+
+plt.legend()
+plt.show()
