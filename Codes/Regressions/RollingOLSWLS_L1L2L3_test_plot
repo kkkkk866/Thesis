@@ -1,0 +1,67 @@
+"""
+Created on Wed Jul 26 00:51:28 2023
+
+@author: RL46RG
+"""
+
+from sklearn.linear_model import Lasso, Ridge, ElasticNet
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+
+df = pd.read_csv('C:\\Users\\RL46RG\\KL\\Thesis\\data\\7instr.csv')
+df = df.fillna(0)
+
+df['date'] = pd.to_datetime(df['date'])
+df.set_index('date', inplace=True)
+
+window_sizes = [10]
+regularizations = ['Lasso', 'Ridge', 'ElasticNet']
+
+# get predictor and target columns
+X = df[['COPPER', 'EUR', 'SP500', 'US10', 'GOLD_micro', 'GAS_US_mini', 'CRUDE_W_mini']]
+y = df['ROR']
+
+# loop over window sizes and regularizations
+for window in window_sizes:
+    for regularization in regularizations:
+        # check if window size is larger than the number of observations
+        if window > len(df):
+            continue
+
+        predicted_ROR = []
+        for start in range(len(df) - window):
+            # get window data
+            X_window = X[start:start + window]
+            y_window = y[start:start + window]
+            
+            # fit regression with selected regularization
+            if regularization == 'Lasso':
+                model = Lasso(alpha=0.1)  # set alpha to your chosen L1 penalty
+            elif regularization == 'Ridge':
+                model = Ridge(alpha=0.1)  # set alpha to your chosen L2 penalty
+            elif regularization == 'ElasticNet':
+                model = ElasticNet(alpha=0.1, l1_ratio=0.5)  # set alpha to your chosen penalty and l1_ratio to the mix ratio
+
+            model.fit(X_window, y_window)
+
+            # predict next data point
+            X_next = X.iloc[start + window]
+            if not np.isnan(X_next).any():  # check if X_next contains NaN values
+                predicted_ROR.append(model.predict([X_next])[0])
+
+        # save predicted ROR to df
+        df['predicted_ROR_' + regularization + '_' + str(window)] = pd.Series(predicted_ROR, index=df.index[window:])
+
+# Plot actual and predicted ROR
+plt.figure(figsize=(80, 20))
+plt.plot(df.index, df['ROR'], label='Actual ROR')
+
+for window in window_sizes:
+    for regularization in regularizations:
+        if window > len(df):
+            continue
+        plt.plot(df.index, df['predicted_ROR_' + regularization + '_' + str(window)], label='Predicted ROR ' + regularization + ', window=' + str(window))
+
+plt.legend()
+plt.show()
