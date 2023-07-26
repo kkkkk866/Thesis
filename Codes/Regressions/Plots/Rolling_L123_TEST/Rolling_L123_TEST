@@ -1,1 +1,7 @@
 Rolling_L123_TEST
+Cumulative MSE for Lasso, window=10: 2.7122952296733954e-05
+Cumulative MSE for Ridge, window=10: 2.7122952296733954e-05
+Cumulative MSE for ElasticNet, window=10: 2.7122952296733954e-05
+Cumulative MSE for Lasso, window=50: 2.7122952296733954e-05
+Cumulative MSE for Ridge, window=50: 2.7122952296733954e-05
+Cumulative MSE for ElasticNet, window=50: 2.7122952296733954e-05
