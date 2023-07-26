@@ -1,1 +1,5 @@
 -
+Cumulative MSE for OLS, window=10: 4.956384966016795e-05
+Cumulative MSE for WLS, window=10: 4.956384966016795e-05
+Cumulative MSE for OLS, window=50: 7.016830628977585e-05
+Cumulative MSE for WLS, window=50: 7.016830628977585e-05
