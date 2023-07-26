@@ -1,0 +1,62 @@
+#Make a heatmap of all of the instruments
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Read the csv file
+data = pd.read_csv(r"C:\Users\RL46RG\KL\Thesis\data\mm.csv")
+
+# Drop the 'date' column
+data = data.drop(columns=['date'])
+
+# Calculate correlations between variables
+correlation_matrix = data.corr()
+
+# Create a figure object with a larger size
+plt.figure(figsize=(30, 30))
+
+# Create a heatmap with larger labels
+sns.heatmap(correlation_matrix, annot=False, cmap='coolwarm', xticklabels=True, yticklabels=True)
+
+# Rotate the y labels (variables) to be displayed horizontally
+plt.yticks(rotation=0)
+
+# Increase the font size of the labels
+plt.tick_params(axis='both', which='major', labelsize=10)
+
+# Display the figure
+plt.show()
+
+
+#Heatmap of the 7 instr
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Jul 24 12:47:05 2023
+
+@author: RL46RG
+"""
+
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# 读取csv文件
+data = pd.read_csv(r"C:\Users\RL46RG\KL\Thesis\data\mm.csv")
+
+# 删除日期列
+data = data.drop(columns=['date'])
+
+# 计算变量之间的相关性
+correlation_matrix = data.corr()
+
+# 创建一个绘图对象
+plt.figure(figsize=(10, 8))
+
+# 创建热力图
+sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm')
+
+# 显示图像
+plt.show()
+
+
+
