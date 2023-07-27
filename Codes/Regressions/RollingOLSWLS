@@ -1,73 +1,81 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Jul 24 23:21:01 2023
+Created on Thu Jul 27 11:17:00 2023
 
-@author: RL46RG
+@author: kanr8
 """
 
 import pandas as pd
 import numpy as np
 import statsmodels.api as sm
 import matplotlib.pyplot as plt
+from statsmodels.regression.rolling import RollingOLS, RollingWLS
 import matplotlib.dates as mdates
+from sklearn.metrics import mean_squared_error
 
-# Load CSV data
-data = pd.read_csv(r'C:\Users\RL46RG\KL\Thesis\data\7instr.csv', parse_dates=[0], index_col=0)
-data = data.fillna(0)
+# Load the data
+df = pd.read_csv('D:\\2022-2023\\thesis\\regression\\7instr.csv')
 
-# Define the predictor (ROR) and explanatory variables
-predictor = 'ROR'
-explanatory_vars = data.columns[1:]
+df = df.fillna(0)
 
-# Initialize the window sizes to be tested
-window_sizes = [5]
+# Parse the 'date' column to datetime
+df['date'] = pd.to_datetime(df['date'])
 
-# Function to perform rolling regression and get predicted ROR values
-def get_predicted_ROR(window_size, method='OLS'):
-    predicted_ROR = []
-    for i in range(len(data) - window_size):
-        window_data = data.iloc[i:i+window_size]
-        X = sm.add_constant(window_data[explanatory_vars])
-        y = window_data[predictor]
+# Set the 'date' column as the index
+df.set_index('date', inplace=True)
 
-        if method == 'OLS':
-            model = sm.OLS(y, X)
-        elif method == 'WLS':
-            weights = np.ones(window_size)
-            model = sm.WLS(y, X, weights=weights)
+# Define the dependent variable
+y = df['ROR']
 
-        results = model.fit()
-        predicted_ROR.extend(results.predict(X.iloc[-1:].values))
+# Define the independent variables
+X = sm.add_constant(df.drop('ROR', axis=1))  # Our model needs an intercept so we add a constant
 
-    return predicted_ROR
+# Window sizes
+windows = [10, 20, 50]
 
-# Perform Rolling OLS and get predicted ROR values
-predicted_ROR_ols_5 = get_predicted_ROR(window_size=5, method='OLS')
-#predicted_ROR_ols_10 = get_predicted_ROR(window_size=10, method='OLS')
+# Create the figure and plot the actual ROR
+plt.figure(figsize=(100, 20))
+plt.plot(df.index, df['ROR'], label='Actual ROR')
 
-# Perform Rolling WLS and get predicted ROR values
-#predicted_ROR_wls_5 = get_predicted_ROR(window_size=5, method='WLS')
-#predicted_ROR_wls_10 = get_predicted_ROR(window_size=10, method='WLS')
+# Apply the models for each window size
+for window in windows:
+    # Rolling OLS
+    model_ols = RollingOLS(y, X, window=window)
+    res_ols = model_ols.fit()
+    
+    # For each fitted model, calculate the predicted values (fitted values)
+    df[f'fitted_ROR_ols_{window}'] = (X * res_ols.params).sum(axis=1)
 
-# Plot actual ROR values and predicted ROR values for both window sizes
-plt.figure(figsize=(80, 8))  # Increase the figure size to show more years
+    # Add to the plot
+    plt.plot(df.index, df[f'fitted_ROR_ols_{window}'], label=f'Fitted ROR OLS - Window {window}')
+    
+    # Calculate and print the MSE
+    mse_ols = mean_squared_error(y[window-1:], df[f'fitted_ROR_ols_{window}'][window-1:])  # Remove the first 'window-1' observations, because the model is not defined for them
+    print(f'MSE for OLS - Window {window}: {mse_ols}')
 
-plt.plot(data.index[5:], data['ROR'][5:], label='Actual ROR', color='blue')
-plt.plot(data.index[5:], predicted_ROR_ols_5, label='Predicted ROR (OLS, Window 5)', linestyle='dashed', color='green')
-#plt.plot(data.index[10:], predicted_ROR_ols_10, label='Predicted ROR (OLS, Window 10)', linestyle='dashed', color='orange')
-#plt.plot(data.index[5:], predicted_ROR_wls_5, label='Predicted ROR (WLS, Window 5)', linestyle='dashed', color='red')
-#plt.plot(data.index[10:], predicted_ROR_wls_10, label='Predicted ROR (WLS, Window 10)', linestyle='dashed', color='purple')
+    # Rolling WLS
+    model_wls = RollingWLS(y, X, window=window, weights=np.random.rand(len(y)))
+    res_wls = model_wls.fit()
+    
+    # For each fitted model, calculate the predicted values (fitted values)
+    df[f'fitted_ROR_wls_{window}'] = (X * res_wls.params).sum(axis=1)
 
-plt.xlabel('Time')
-plt.ylabel('ROR')
-plt.title('Actual vs. Predicted ROR values for Rolling OLS and WLS')
-plt.legend()
-plt.grid(True)
+    # Add to the plot
+    plt.plot(df.index, df[f'fitted_ROR_wls_{window}'], label=f'Fitted ROR WLS - Window {window}')
+
+    # Calculate and print the MSE
+    mse_wls = mean_squared_error(y[window-1:], df[f'fitted_ROR_wls_{window}'][window-1:])  # Remove the first 'window-1' observations, because the model is not defined for them
+    print(f'MSE for WLS - Window {window}: {mse_wls}')
 
 # Set x-axis to display years from 2000 to 2024 every year
 years = mdates.YearLocator()
 years_fmt = mdates.DateFormatter('%Y')
 plt.gca().xaxis.set_major_locator(years)
 plt.gca().xaxis.set_major_formatter(years_fmt)
+
+plt.legend()
+plt.title('ROR vs Fitted ROR')
+plt.xlabel('Date')
+plt.ylabel('ROR')
 
 plt.show()
