@@ -1,0 +1,16 @@
+To visualize and evaluate the performance of regressions, I plotted the predicted ROR and actual ROR as well as calculating their MSE.
+I used 2 methods to do this. 
+
+1. Predict the ROR of the last observation in the current window size using the coefficients yielded by the current window size. 
+Code of RollingOLS and Rolling WLS: https://github.com/kkkkk866/Thesis/blob/724f9bdf78b8401d604bc2c82defa959a35680be/Codes/Regressions/RollingOLSWLS
+Plot and MSE of RollingOLS and Rolling WLS: https://github.com/kkkkk866/Thesis/tree/724f9bdf78b8401d604bc2c82defa959a35680be/Codes/Regressions/Plots/RollingOLSWLS_fit
+
+Code of Rolling regression with L123 regularization: https://github.com/kkkkk866/Thesis/blob/724f9bdf78b8401d604bc2c82defa959a35680be/Codes/Regressions/L123
+Plot and MSE of Rolling regression with L123 regularization: https://github.com/kkkkk866/Thesis/tree/724f9bdf78b8401d604bc2c82defa959a35680be/Codes/Regressions/Plots/L123
+
+2. Predict the ROR of the following observation outside the current window size using the coefficients yielded by the current window size. 
+Code of RollingOLS and Rolling WLS: https://github.com/kkkkk866/Thesis/blob/724f9bdf78b8401d604bc2c82defa959a35680be/Codes/Regressions/RollingOLS%26WLS_test_plot
+Plot and MSE of RollingOLS and Rolling WLS: https://github.com/kkkkk866/Thesis/tree/724f9bdf78b8401d604bc2c82defa959a35680be/Codes/Regressions/Plots/RollingOLSWLS_TEST
+
+Code of Rolling regression with L123 regularization: https://github.com/kkkkk866/Thesis/blob/724f9bdf78b8401d604bc2c82defa959a35680be/Codes/Regressions/RollingOLSWLS_L1L2L3_test_plot
+Plot and MSE of Rolling regression with L123 regularization: 
