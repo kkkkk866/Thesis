@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Jul 27 12:14:27 2023
+
+@author: RL46RG
+"""
+
 
 
 # -*- coding: utf-8 -*-
@@ -22,19 +29,19 @@ df = df.fillna(0)
 df['date'] = pd.to_datetime(df['date'])
 df.set_index('date', inplace=True)
 
-# Choose a split point for your data
+# Choose a split point for the data
 split_point = int(len(df) * 0.02)  # let's say 80% for training, 20% for testing
 
-# Create your training and test sets
+# Create the training and test sets
 df_train = df.iloc[:split_point]
 df_test = df.iloc[split_point:]
 
-# Get your X and y for training
+# Get the X and y for training
 endog_train = df_train['ROR']
 exog_train = sm.add_constant(df_train[['COPPER', 'EUR', 'SP500', 'US10', 'GOLD_micro', 'GAS_US_mini', 'CRUDE_W_mini']])
 weights_train = np.ones_like(endog_train)  # change here for different weights
 
-# Get your X for testing
+# Get the X for testing
 exog_test = sm.add_constant(df_test[['COPPER', 'EUR', 'SP500', 'US10', 'GOLD_micro', 'GAS_US_mini', 'CRUDE_W_mini']])
 
 # Specify the window sizes
