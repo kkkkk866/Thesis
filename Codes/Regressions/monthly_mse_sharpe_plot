@@ -169,6 +169,10 @@ for window in window_sizes:
 plt.legend()
 plt.show()
 
+Selected instruments:
+Index(['LEAD_LME', 'CRUDE_W_mini', 'JPY', 'MILK', 'MILLWHEAT', 'NASDAQ_micro',
+       'NICKEL_LME', 'PLAT'],
+      dtype='object')
 Monthly MSE for Lasso_10: 4.4023784877716973e-07
 Monthly MSE for ElasticNet_10: 4.402378488375847e-07
 Monthly MSE for Lasso_20: 8.495263589087886e-07
