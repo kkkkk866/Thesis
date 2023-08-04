@@ -168,3 +168,36 @@ for window in window_sizes:
 
 plt.legend()
 plt.show()
+
+Monthly MSE for Lasso_10: 4.4023784877716973e-07
+Monthly MSE for ElasticNet_10: 4.402378488375847e-07
+Monthly MSE for Lasso_20: 8.495263589087886e-07
+Monthly MSE for ElasticNet_20: 8.495263588669788e-07
+Monthly MSE for Lasso_30: 1.0508423654832907e-06
+Monthly MSE for ElasticNet_30: 1.050842365258614e-06
+Monthly MSE for Lasso_50: 1.1279550746461022e-06
+Monthly MSE for ElasticNet_50: 1.1279550746437574e-06
+Monthly MSE for Lasso_80: 1.2307260446479691e-06
+Monthly MSE for ElasticNet_80: 1.2307260434789233e-06
+Monthly MSE for Lasso_100: 1.1640397002979606e-06
+Monthly MSE for ElasticNet_100: 1.1640397002979606e-06
+Monthly MSE for Lasso_150: 1.2521473340726543e-06
+Monthly MSE for ElasticNet_150: 1.2521473340726543e-06
+Monthly MSE for Lasso_200: 1.3402516078849627e-06
+Monthly MSE for ElasticNet_200: 1.3402516078849627e-06
+Sharpe Ratio for Lasso_10: 0.6388661046526398
+Sharpe Ratio for ElasticNet_10: 0.6388661047440827
+Sharpe Ratio for Lasso_20: 0.6872115922722473
+Sharpe Ratio for ElasticNet_20: 0.687211592331626
+Sharpe Ratio for Lasso_30: 0.7487619893218393
+Sharpe Ratio for ElasticNet_30: 0.7487619889753364
+Sharpe Ratio for Lasso_50: 0.9099334742139797
+Sharpe Ratio for ElasticNet_50: 0.909933474008095
+Sharpe Ratio for Lasso_80: 1.1564137706114193
+Sharpe Ratio for ElasticNet_80: 1.1564137726523032
+Sharpe Ratio for Lasso_100: 1.3067688450884254
+Sharpe Ratio for ElasticNet_100: 1.3067688485333457
+Sharpe Ratio for Lasso_150: 1.6633126359044514
+Sharpe Ratio for ElasticNet_150: 1.663312645138085
+Sharpe Ratio for Lasso_200: 2.041777415034369
+Sharpe Ratio for ElasticNet_200: 2.0417774445190084
