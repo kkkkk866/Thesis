@@ -1,0 +1,61 @@
+Strategy eight: Fast trend following, long and short with trend strength
+
+import numpy as np
+
+# Step 1: Calculate the raw crossover value for each trading rule variation
+def calculate_crossover(price, short_period, long_period):
+    short_avg = np.mean(price[-short_period:])
+    long_avg = np.mean(price[-long_period:])
+    crossover_value = short_avg - long_avg
+    return crossover_value
+
+# Simulated price data
+price_data = [100, 105, 110, 108, 115, 112, 118, 120, 122, 125, 124, 130, 128, 135]
+
+# Parameters
+short_period = 16
+long_period = 64
+risk_target = 0.5
+current_risk = 0.4
+current_price = 130
+fx_rate = 1.25
+capital = 100000
+instrument_weights = [0.4, 0.6]
+idm = 1.2
+upper_buffer = 0.05
+lower_buffer = 0.05
+
+# Step 1: Calculate the raw crossover value
+crossover_value = calculate_crossover(price_data, short_period, long_period)
+
+# Step 2: Divide by the standard deviation to find the risk normalized forecast
+std_dev = np.std(price_data)
+risk_normalized_forecast = crossover_value / std_dev
+
+# Step 3: Scale the forecast to have an expected absolute average value of 10
+scaled_forecast = risk_normalized_forecast * 10
+
+# Step 4: Cap the forecast
+capped_forecast = np.clip(scaled_forecast, -1, 1)
+
+# Step 5: Calculate optimal risk-adjusted unrounded position (N contracts)
+position_multiplier = capital * idm * np.array(instrument_weights) / (current_price * fx_rate * current_risk)
+optimal_position = capped_forecast * position_multiplier / risk_target
+
+# Step 6: Calculate a buffer zone around the optimal position
+upper_bound = optimal_position + upper_buffer
+lower_bound = optimal_position - lower_buffer
+
+# Simulated current position
+current_position = np.array([0.3, 0.2])
+
+# Step 7: Compare the current position to the buffer zone to decide whether to trade
+for i in range(len(optimal_position)):
+    if current_position[i] > upper_bound[i]:
+        contracts_to_sell = int(current_position[i] - upper_bound[i])
+        print(f"Sell {contracts_to_sell} contracts of Instrument {i + 1}")
+    elif current_position[i] < lower_bound[i]:
+        contracts_to_buy = int(lower_bound[i] - current_position[i])
+        print(f"Buy {contracts_to_buy} contracts of Instrument {i + 1}")
+    else:
+        print(f"No trading required for Instrument {i + 1}")
