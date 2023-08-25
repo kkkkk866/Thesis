@@ -1,0 +1,27 @@
+import pandas as pd
+
+def carry(priced_contract: pd.Series, 
+          carry_contract: pd.Series, 
+          forward_contract: pd.Series, 
+          lookback: int, 
+          expiry_dates: pd.Series) -> pd.Series:
+    
+    # Calculate the contract spreads
+    carry_spread = carry_contract - priced_contract
+    forward_spread = priced_contract - forward_contract
+    
+    # If carry_spread is NaN, use forward_spread instead
+    spread = carry_spread.where(~carry_spread.isna(), forward_spread)
+    
+    # Volatility normalization
+    vol = priced_contract.rolling(90).std()
+    signal = spread/vol
+    
+    # Adjust signal based on the number of days between expiry dates of contracts
+    days_between_expiry = expiry_dates.diff().dt.days
+    signal = signal / days_between_expiry
+    
+    # Smoothing 
+    signal = signal.ewm(span=lookback).mean()
+    
+    return signal
