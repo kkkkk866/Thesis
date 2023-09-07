@@ -1,27 +1,90 @@
-import pandas as pd
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Sep  7 23:50:00 2023
 
-def carry(priced_contract: pd.Series, 
-          carry_contract: pd.Series, 
-          forward_contract: pd.Series, 
-          lookback: int, 
-          expiry_dates: pd.Series) -> pd.Series:
+@author: kanr8
+"""
+
+import pandas as pd
+import os
+
+def carry_strategy_for_instrument(instrument_filepath):
+    spans = [5, 20, 60, 120]
+    prices = pd.read_csv(instrument_filepath, parse_dates=['DATETIME'])
     
+    # Convert DATETIME to just date format
+    prices['DATETIME'] = pd.to_datetime(prices['DATETIME']).dt.date
+
     # Calculate the contract spreads
-    carry_spread = carry_contract - priced_contract
-    forward_spread = priced_contract - forward_contract
-    
-    # If carry_spread is NaN, use forward_spread instead
-    spread = carry_spread.where(~carry_spread.isna(), forward_spread)
-    
-    # Volatility normalization
-    vol = priced_contract.rolling(90).std()
-    signal = spread/vol
-    
-    # Adjust signal based on the number of days between expiry dates of contracts
-    days_between_expiry = expiry_dates.diff().dt.days
-    signal = signal / days_between_expiry
-    
-    # Smoothing 
-    signal = signal.ewm(span=lookback).mean()
-    
-    return signal
+    carry_spread = prices['CARRY'] - prices['PRICE']
+    forward_spread = prices['PRICE'] - prices['FORWARD']
+
+    # Replace NaN values in carry_spread with forward_spread
+    spread = carry_spread.combine_first(forward_spread)
+
+    # Replace NaN values in forward_spread with average from the last month
+    last_month_avg = forward_spread.rolling(window=30, min_periods=1).mean().shift(1)
+    spread.where(~spread.isna(), last_month_avg, inplace=True)
+
+    # Determine months_between_contracts based on which spread is used
+    if not carry_spread.isna().any():
+        months_between_contracts = (prices['CARRY_CONTRACT'] % 10000 - prices['PRICE_CONTRACT'] % 10000) / 100
+    else:
+        months_between_contracts = (prices['PRICE_CONTRACT'] % 10000 - prices['FORWARD_CONTRACT'] % 10000) / 100
+    months_between_contracts = months_between_contracts.abs()
+
+    # Expiry difference in years
+    expiry_difference_years = months_between_contracts / 12
+
+    # Annualised raw carry
+    annualised_raw_carry = spread - expiry_difference_years
+
+    # Assuming 'sigma' is a given constant, if it's dynamic, adjust accordingly.
+    sigma = 0.1
+    carry = annualised_raw_carry / (sigma * 16)
+
+    # Smoothed carry forecast for each span
+    forecasts = {}
+    for span in spans:
+        forecasts[span] = carry.ewm(span=span).mean()
+
+    # Scaling and capping the forecasts
+    scaled_forecasts = {}
+    capped_forecasts = {}
+    for span, forecast in forecasts.items():
+        scaled_forecasts[span] = forecast * 30
+        capped_forecasts[span] = scaled_forecasts[span].clip(lower=-20, upper=20)
+
+    # Raw combined forecast; This example assumes equal weights. Adjust if your weights are different.
+    combined_forecast = sum(capped_forecasts[span] for span in spans) / len(spans)
+
+    # Scaled combined forecast
+    FDM = 1  # You'll need to provide the value or method for FDM
+    scaled_combined_forecast = combined_forecast * FDM
+
+    # Capped combined forecast
+    capped_combined_forecast = scaled_combined_forecast.clip(lower=-20, upper=20)
+
+    # Return a DataFrame with DATETIME and the forecast values
+    return pd.DataFrame({
+        'DATETIME': prices['DATETIME'],
+        'FORECAST': capped_combined_forecast
+    })
+
+def process_multiple_files(directory_path):
+    instruments = ["COPPER", "CRUDE_W", "GAS_US", "GOLD", "SP500", "US20", "EUR"]
+    results = {}
+
+    for instrument in instruments:
+        filepath = os.path.join(directory_path, instrument + '.csv')
+        results[instrument] = carry_strategy_for_instrument(filepath)
+        
+        # Save the forecast data to a new CSV file
+        output_filepath = os.path.join(directory_path, instrument + '_forecast.csv')
+        results[instrument].to_csv(output_filepath, index=False)
+
+    return results
+
+# Sample usage
+directory_path = "D:\\2022-2023\\thesis\\bottomup\\0905\\plots\\carry\\data"
+result = process_multiple_files(directory_path)
