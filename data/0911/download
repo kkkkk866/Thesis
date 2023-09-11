@@ -1,0 +1,14 @@
+import requests
+
+# 直接下载链接
+url = 'https://raw.githubusercontent.com/kkkkk866/Thesis/main/data/0911/example.csv'
+
+# 使用GET请求获取文件
+response = requests.get(url)
+
+# 确保请求成功
+if response.status_code == 200:
+    with open('example.csv', 'wb') as file:
+        file.write(response.content)
+else:
+    print(f"Failed to download the file. Status code: {response.status_code}")
