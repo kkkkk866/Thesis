@@ -1,14 +1,30 @@
 import requests
+import os
 
-# 直接下载链接
-url = 'https://raw.githubusercontent.com/kkkkk866/Thesis/main/data/0911/example.csv'
+# 设置基础URL和API endpoint
+BASE_URL = "https://api.github.com/repos/kkkkk866/Thesis/git/trees/main?recursive=1"
+RAW_URL = "https://raw.githubusercontent.com/kkkkk866/Thesis/main/"
 
-# 使用GET请求获取文件
-response = requests.get(url)
-
-# 确保请求成功
+response = requests.get(BASE_URL)
 if response.status_code == 200:
-    with open('example.csv', 'wb') as file:
-        file.write(response.content)
+    files = response.json().get('tree', [])
+    
+    # 过滤出CSV文件
+    csv_files = [f for f in files if f['path'].endswith('.csv') and 'data/0911' in f['path']]
+    
+    # 创建一个目录来保存下载的CSV文件（可选）
+    if not os.path.exists('downloaded_csvs'):
+        os.mkdir('downloaded_csvs')
+    
+    for file in csv_files:
+        file_url = RAW_URL + file['path']
+        print(f"Downloading {file_url}...")
+        
+        file_response = requests.get(file_url)
+        if file_response.status_code == 200:
+            with open(os.path.join('downloaded_csvs', os.path.basename(file['path'])), 'wb') as file_out:
+                file_out.write(file_response.content)
+        else:
+            print(f"Failed to download {file_url}. Status code: {file_response.status_code}")
 else:
-    print(f"Failed to download the file. Status code: {response.status_code}")
+    print(f"Failed to fetch the directory. Status code: {response.status_code}")
